@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardwareStore_Application", "HardwareStore_Application.csproj", "{006310A3-9A4C-4C26-A122-D353CD65C469}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{006310A3-9A4C-4C26-A122-D353CD65C469}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006310A3-9A4C-4C26-A122-D353CD65C469}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006310A3-9A4C-4C26-A122-D353CD65C469}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006310A3-9A4C-4C26-A122-D353CD65C469}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8E1F9F0-B955-4BFB-8C0E-4FE74DC1A45F}
+	EndGlobalSection
+EndGlobal
