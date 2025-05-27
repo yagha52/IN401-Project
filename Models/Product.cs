@@ -8,7 +8,6 @@
         public Category Category { get; set; }
         public int BrandID { get; set; }
         public Brand Brand { get; set; }
-
         public string image_url { get; set; }
     }
 }

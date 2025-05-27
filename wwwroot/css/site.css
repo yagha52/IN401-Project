@@ -410,38 +410,7 @@ body {
     }
 }
 /* Footer Styles */
-.footer {
-    background-color: #1a1f2e;
-    color: #e2e8f0;
-    padding: 4rem 2rem 2rem;
-    margin-top: 4rem;
-    border-top: 1px solid #2d3748;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 3rem;
-}
-
-.footer-section h3,
-.footer-section h4 {
-    color: #4a9eff;
-    margin-bottom: 1rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-.footer-section p {
-    color: #cbd5e0;
-    font-size: 0.95rem;
-    line-height: 1.6;
-}
-
-/* Quick Links Styling */
+/* Footer Quick Links - Improved Version */
 .footer-section ul {
     list-style: none;
     padding: 0;
@@ -453,31 +422,54 @@ body {
 }
 
 .footer-section a {
-    color: #8b92a5;
-    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #cbd5e0;
+    text-decoration: none !important;
     font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.25rem 0;
     transition: all 0.3s ease;
-    display: inline-block;
-    position: relative;
-    padding-left: 1.2rem;
+    border: none;
+    outline: none;
 }
 
-    .footer-section a::before {
-        content: '›';
-        position: absolute;
-        left: 0;
+    .footer-section a:link,
+    .footer-section a:visited {
+        color: #cbd5e0;
+        text-decoration: none;
+    }
+
+    .footer-section a:hover,
+    .footer-section a:focus {
         color: #4a9eff;
+        text-decoration: none !important;
+        transform: translateX(3px);
+    }
+
+    .footer-section a:active {
+        color: #6bb6ff;
+        text-decoration: none;
+    }
+
+    /* Optional: Add a subtle arrow indicator */
+    .footer-section a::before {
+        content: '?';
+        margin-right: 0.5rem;
+        color: #4a9eff;
+        font-size: 0.8rem;
         transition: transform 0.3s ease;
     }
 
-    .footer-section a:hover {
-        color: #ffffff;
+    .footer-section a:hover::before {
         transform: translateX(2px);
     }
 
-        .footer-section a:hover::before {
-            transform: translateX(4px);
-        }
+/* Alternative version without arrows if you prefer cleaner look */
+.footer-section.no-arrows a::before {
+    display: none;
+}
 
 /* Social Icons */
 .social-icons {
@@ -494,6 +486,9 @@ body {
         .social-icons a:hover {
             color: #4a9eff;
         }
+html {
+    scroll-behavior: smooth;
+}
 
 /* Footer Bottom */
 .footer-bottom {
