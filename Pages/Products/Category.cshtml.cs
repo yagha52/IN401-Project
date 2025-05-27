@@ -1,60 +1,75 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
 using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 
 namespace HardwareStore_Application.Pages.Products
 {
-    [IgnoreAntiforgeryToken]
-    [Route("/Products/Category/{categoryName}")]
     public class CategoryModel : PageModel
     {
-        public List<Product> Products { get; set; } = new();
-
-        [FromRoute(Name = "categoryName")]
+        public List<Product> Products { get; set; } = new List<Product>();
         public string CategoryName { get; set; }
+        public string SearchQuery { get; set; }
 
-        [FromQuery(Name = "brand")]
-        public string Brand { get; set; }
-
-        public void OnGet()
+        public void OnGet(string categoryName, string brand, string query)
         {
-            string connectionString = "server=localhost;port=3306;database=hardwarestore;user=root;password=R3in3.123@na;";
-            using MySqlConnection conn = new(connectionString);
-            conn.Open();
+            CategoryName = categoryName;
+            SearchQuery = query;
 
-            string query = @"
-                SELECT p.ProductID, p.ProductName, p.BrandID, p.Price, p.OriginalPrice
-                FROM product p
-                JOIN category c ON p.CategoryID = c.CategoryID
-                JOIN brand b ON p.BrandID = b.BrandID
-                WHERE c.CategoryName = @categoryName
-            ";
-
-            if (!string.IsNullOrEmpty(Brand))
+            string connectionString = "server=localhost;user=root;password=R3in3.123@na;database=hardwarestore;";
+            using (var connection = new MySqlConnection(connectionString))
             {
-                query += " AND b.BrandName = @brand";
-            }
+                connection.Open();
 
-            using MySqlCommand cmd = new(query, conn);
-            cmd.Parameters.AddWithValue("@categoryName", CategoryName);
-
-            if (!string.IsNullOrEmpty(Brand))
-            {
-                cmd.Parameters.AddWithValue("@brand", Brand);
-            }
-
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                Products.Add(new Product
+                int? categoryId = null;
+                using (var cmd = new MySqlCommand("SELECT CategoryID FROM category WHERE CategoryName = @name", connection))
                 {
-                    ProductID = reader.GetInt32("ProductID"),
-                    ProductName = reader.GetString("ProductName"),
-                    BrandID = reader.GetInt32("BrandID"),
-                    Price = reader.GetDecimal("Price"),
-                    OriginalPrice = reader.IsDBNull(reader.GetOrdinal("OriginalPrice")) ? 0 : reader.GetDecimal("OriginalPrice"),
-                });
+                    cmd.Parameters.AddWithValue("@name", categoryName);
+                    var result = cmd.ExecuteScalar();
+                    if (result != null)
+                        categoryId = Convert.ToInt32(result);
+                }
+
+                if (categoryId == null) return;
+
+                string sql = @"
+                    SELECT p.*, c.CategoryName, b.BrandName
+                    FROM product p
+                    JOIN category c ON p.CategoryID = c.CategoryID
+                    JOIN brand b ON p.BrandID = b.BrandID
+                    WHERE p.CategoryID = @catId";
+
+                if (!string.IsNullOrEmpty(brand))
+                    sql += " AND b.BrandName = @brand";
+
+                if (!string.IsNullOrWhiteSpace(query))
+                    sql += " AND p.ProductName LIKE @query";
+
+                using (var cmd = new MySqlCommand(sql, connection))
+                {
+                    cmd.Parameters.AddWithValue("@catId", categoryId);
+                    if (!string.IsNullOrEmpty(brand))
+                        cmd.Parameters.AddWithValue("@brand", brand);
+                    if (!string.IsNullOrWhiteSpace(query))
+                        cmd.Parameters.AddWithValue("@query", $"%{query}%");
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Products.Add(new Product
+                            {
+                                ProductID = reader.GetInt32("ProductID"),
+                                ProductName = reader.GetString("ProductName"),
+                                CategoryID = reader.GetInt32("CategoryID"),
+                                BrandID = reader.GetInt32("BrandID"),
+                                OriginalPrice = reader.GetDecimal("OriginalPrice"),
+                                Price = reader.GetDecimal("Price"),
+                                image_url = reader.GetString("image_url")
+                            });
+                        }
+                    }
+                }
             }
         }
 
@@ -62,9 +77,11 @@ namespace HardwareStore_Application.Pages.Products
         {
             public int ProductID { get; set; }
             public string ProductName { get; set; }
+            public int CategoryID { get; set; }
             public int BrandID { get; set; }
-            public decimal Price { get; set; }
             public decimal OriginalPrice { get; set; }
+            public decimal Price { get; set; }
+            public string image_url { get; set; }
         }
     }
 }

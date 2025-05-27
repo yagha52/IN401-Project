@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
-using HardwareStore_Application.Models; // replace with your actual namespace
 
 public class ApplicationDbContext : DbContext
 {

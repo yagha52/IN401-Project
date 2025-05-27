@@ -14,25 +14,24 @@
         </div>
 
         <div class="nav-search">
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search for CPUs, GPUs, RAM..." />
-            </div>
+            <form method="get" class="search-form">
+                <input type="hidden" name="categoryName" value="@Model.CategoryName" />
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" name="query" class="search-input" placeholder="Search for CPUs, GPUs, RAM..." value="@Model.SearchQuery" />
+                </div>
+            </form>
         </div>
 
         <div class="nav-actions">
-            <a href="/account/profile" class="nav-link">
-                <i class="fas fa-user"></i>
-            </a>
-            <a href="#" class="nav-link">
-                <i class="fas fa-shopping-cart"></i>
-            </a>
+            <a href="/account/profile" class="nav-link"><i class="fas fa-user"></i></a>
+            <a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i></a>
         </div>
     </div>
 </nav>
 
 <div class="main-container">
-    <!-- Sidebar with filters -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <h2>🌟 Products</h2>
         <span style="background: #4b5563; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">
@@ -40,23 +39,22 @@
         </span>
 
         <h3>Filters</h3>
-
         <div class="filter-section">
-            <h4 style="color: #ffffff; font-size: 1rem; margin: 1rem 0 0.5rem 0;">Categories</h4>
+            <h4 style="color: #ffffff;">Categories</h4>
             <ul class="filter-list">
-                <li class="filter-item" data-category="Processors"><span class="filter-icon">🔧</span>Processors</li>
-                <li class="filter-item" data-category="Graphics Cards"><span class="filter-icon">🎮</span>Graphics Cards</li>
-                <li class="filter-item" data-category="Memory"><span class="filter-icon">💾</span>Memory</li>
-                <li class="filter-item" data-category="Storage"><span class="filter-icon">💽</span>Storage</li>
+                <li class="filter-item" data-category="cpu"><span class="filter-icon">🔧</span>Processors</li>
+                <li class="filter-item" data-category="vga"><span class="filter-icon">🎮</span>Graphics Cards</li>
+                <li class="filter-item" data-category="ram"><span class="filter-icon">💾</span>Memory</li>
+                <li class="filter-item" data-category="ssd"><span class="filter-icon">💽</span>Storage</li>
                 <li class="filter-item" data-category="Motherboards"><span class="filter-icon">⚡</span>Motherboards</li>
                 <li class="filter-item" data-category="Power Supplies"><span class="filter-icon">🔌</span>Power Supplies</li>
                 <li class="filter-item" data-category="Cases"><span class="filter-icon">📦</span>Cases</li>
-                <li class="filter-item" data-category="Cooling"><span class="filter-icon">❄️</span>Cooling</li>
+                <li class="filter-item" data-category="Cooling"><span class="filter-icon">❄</span>Cooling</li>
             </ul>
         </div>
 
         <div class="filter-section">
-            <h4 style="color: #ffffff; font-size: 1rem; margin: 1.5rem 0 0.5rem 0;">Brands</h4>
+            <h4 style="color: #ffffff;">Brands</h4>
             <ul class="filter-list">
                 <li class="filter-item" data-brand="AMD">AMD</li>
                 <li class="filter-item" data-brand="Intel">Intel</li>
@@ -66,11 +64,9 @@
         </div>
     </div>
 
-    <!-- Main content area -->
+    <!-- Main content -->
     <div class="product-content">
-        <a href="#" class="back-link">
-            <span class="back-arrow">←</span> Back to Main
-        </a>
+        <a href="#" class="back-link"><span class="back-arrow">←</span> Back to Store</a>
 
         <div class="product-header">
             <h1 class="product-title">@Model.CategoryName</h1>
@@ -79,7 +75,7 @@
         @if (!Model.Products.Any())
         {
             <div class="no-products">
-                <p>No products found in this category.</p>
+                <p>No products found.</p>
             </div>
         }
         else
@@ -88,12 +84,12 @@
                 @foreach (var product in Model.Products)
                 {
                     <div class="product-card" data-product-id="@product.ProductID">
-                           @if (product.OriginalPrice > product.Price)
-                            {
-                                   <div class="sale-badge">Sale</div>
-                            }
+                        @if (product.OriginalPrice > product.Price)
+                        {
+                            <div class="sale-badge">Sale</div>
+                        }
                         <div class="product-image">
-                            <!-- Product image placeholder -->
+                            <img src="@product.image_url" alt="@product.ProductName" />
                         </div>
 
                         <div class="product-info">
@@ -117,22 +113,16 @@
 
                             <div class="product-rating">
                                 <div class="stars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star empty">★</span>
+                                    <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
                                 </div>
                                 <span class="rating-count">(247)</span>
                             </div>
 
-                            <div class="product-pricing" style="margin: 0.5rem 0; font-weight: bold; font-size: 1.1rem;">
+                            <div class="product-pricing">
                                 @if (product.OriginalPrice > 0 && product.OriginalPrice > product.Price)
                                 {
                                     <span class="current-price" style="color: #e53e3e;">$@product.Price.ToString("F2")</span>
-                                    <span class="original-price" style="text-decoration: line-through; color: gray; margin-left: 8px;">
-                                        $@product.OriginalPrice.ToString("F2")
-                                    </span>
+                                    <span class="original-price" style="text-decoration: line-through; color: gray;">$@product.OriginalPrice.ToString("F2")</span>
                                 }
                                 else
                                 {
@@ -140,9 +130,7 @@
                                 }
                             </div>
 
-                            <button class="add-to-cart">
-                                <span class="cart-icon">🛒</span> Add to Cart
-                            </button>
+                            <button class="add-to-cart"><span class="cart-icon">🛒</span> Add to Cart</button>
                         </div>
                     </div>
                 }

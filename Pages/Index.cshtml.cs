@@ -25,13 +25,11 @@ namespace HardwareStore_Application.Pages
                 {
                     using var connection = new MySqlConnection(ConnectionString);
                     await connection.OpenAsync();
-                    // Database connection successful
-                    // You can add logic here to fetch featured products, categories, etc.
+                 
                 }
                 catch (Exception ex)
                 {
-                    // Log the error or handle it appropriately
-                    // For now, we'll continue without database data
+                
                     Console.WriteLine($"Database connection failed: {ex.Message}");
                 }
             }

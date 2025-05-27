@@ -1,5 +1,4 @@
-﻿// JavaScript for Filters and Navigation
-document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('DOMContentLoaded', function () {
 
     // Back button functionality
     const backButton = document.querySelector('.back-link');
@@ -10,63 +9,76 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Get current category from URL path, e.g. /Products/Category/CPU
+    function getCurrentCategory() {
+        const match = window.location.pathname.match(/\/Products\/Category\/([^\/]+)/);
+        return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    // Build URL with category path and optional brand query param
+    function buildUrl(category, brand) {
+        const url = new URL(window.location.origin);
+        url.pathname = `/Products/Category/${encodeURIComponent(category)}`;
+        if (brand) {
+            url.searchParams.set('brand', brand);
+        }
+        return url.toString();
+    }
+
     // Category filter functionality
     const categoryFilters = document.querySelectorAll('.filter-item[data-category]');
     categoryFilters.forEach(filter => {
         filter.addEventListener('click', function () {
             const category = this.getAttribute('data-category');
             if (category) {
-                // Navigate to the selected category
-                window.location.href = `/Products/Category/${encodeURIComponent(category)}`;
+                window.location.href = buildUrl(category, null);
             }
         });
     });
 
     // Brand filter functionality
     const brandFilters = document.querySelectorAll('.filter-item[data-brand]');
-    const currentUrl = new URL(window.location.href);
-
     brandFilters.forEach(filter => {
         filter.addEventListener('click', function () {
             const brand = this.getAttribute('data-brand');
+            if (!brand) return;
 
-            // Toggle brand filter
-            if (this.classList.contains('active')) {
-                // Remove brand filter
-                currentUrl.searchParams.delete('brand');
-                this.classList.remove('active');
-            } else {
-                // Add brand filter
-                currentUrl.searchParams.set('brand', brand);
-                // Remove active class from other brand filters
-                brandFilters.forEach(f => f.classList.remove('active'));
-                this.classList.add('active');
+            const currentCategory = getCurrentCategory();
+            if (!currentCategory) {
+                console.warn('No category in URL - cannot apply brand filter.');
+                return;
             }
 
-            // Navigate with the new filter
-            window.location.href = currentUrl.toString();
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentBrand = urlParams.get('brand');
+
+            let newBrand = null;
+            if (this.classList.contains('active')) {
+                newBrand = null; // remove filter
+            } else {
+                newBrand = brand; // apply filter
+            }
+
+            window.location.href = buildUrl(currentCategory, newBrand);
         });
     });
 
-    // Initialize active states based on current URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedBrand = urlParams.get('brand');
-
-    if (selectedBrand) {
-        const activeBrandFilter = document.querySelector(`[data-brand="${selectedBrand}"]`);
-        if (activeBrandFilter) {
-            activeBrandFilter.classList.add('active');
+    // Highlight current active category
+    const currentCategory = getCurrentCategory();
+    if (currentCategory) {
+        const activeCategoryFilter = document.querySelector(`.filter-item[data-category="${currentCategory}"]`);
+        if (activeCategoryFilter) {
+            activeCategoryFilter.classList.add('active');
         }
     }
 
-    // Set active category based on current page
-    const currentPath = window.location.pathname;
-    const categoryMatch = currentPath.match(/\/Products\/Category\/(.+)/);
-    if (categoryMatch) {
-        const currentCategory = decodeURIComponent(categoryMatch[1]);
-        const activeCategoryFilter = document.querySelector(`[data-category="${currentCategory}"]`);
-        if (activeCategoryFilter) {
-            activeCategoryFilter.classList.add('active');
+    // Highlight current active brand
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedBrand = urlParams.get('brand');
+    if (selectedBrand) {
+        const activeBrandFilter = document.querySelector(`.filter-item[data-brand="${selectedBrand}"]`);
+        if (activeBrandFilter) {
+            activeBrandFilter.classList.add('active');
         }
     }
 
@@ -78,17 +90,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const productId = productCard.getAttribute('data-product-id');
             const productName = productCard.querySelector('.product-name').textContent;
 
-            // Add loading state
             this.innerHTML = '<span class="cart-icon">⏳</span> Adding...';
             this.disabled = true;
 
-            // Simulate adding to cart (replace with actual API call)
             setTimeout(() => {
-                // Show success state
                 this.innerHTML = '<span class="cart-icon">✓</span> Added!';
                 this.style.backgroundColor = '#10b981';
 
-                // Reset after 2 seconds
                 setTimeout(() => {
                     this.innerHTML = '<span class="cart-icon">🛒</span> Add to Cart';
                     this.style.backgroundColor = '';
@@ -100,44 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Search functionality (if you have a search box)
+    // Global search functionality (redirect to search page)
     const searchBox = document.querySelector('input[type="search"]');
     if (searchBox) {
-        let searchTimeout;
-        searchBox.addEventListener('input', function () {
-            clearTimeout(searchTimeout);
-            const query = this.value.trim();
-
-            searchTimeout = setTimeout(() => {
-                if (query.length > 2) {
-                    filterProductsBySearch(query);
-                } else if (query.length === 0) {
-                    showAllProducts();
+        searchBox.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim();
+                if (query.length > 0) {
+                    window.location.href = `/Products/Search?query=${encodeURIComponent(query)}`;
                 }
-            }, 300);
-        });
-    }
-
-    // Filter products by search query
-    function filterProductsBySearch(query) {
-        const products = document.querySelectorAll('.product-card');
-        const lowerQuery = query.toLowerCase();
-
-        products.forEach(product => {
-            const productName = product.querySelector('.product-name').textContent.toLowerCase();
-            if (productName.includes(lowerQuery)) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
             }
         });
     }
 
-    // Show all products
-    function showAllProducts() {
-        const products = document.querySelectorAll('.product-card');
-        products.forEach(product => {
-            product.style.display = 'block';
-        });
-    }
 });
