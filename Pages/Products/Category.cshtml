@@ -1,4 +1,5 @@
 ﻿@page "/Products/Category/{categoryName}"
+@using System.Security.Claims
 @model HardwareStore_Application.Pages.Products.CategoryModel
 @{
     ViewData["Title"] = $"Products in {Model.CategoryName}";
@@ -24,7 +25,38 @@
         </div>
 
         <div class="nav-actions">
-            <a href="/account/profile" class="nav-link"><i class="fas fa-user"></i></a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="user-profile">
+                    <a href="/Account/Profile" class="avatar">
+                        @{
+                            var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown User";
+                            var userInitials = "?";
+                            
+                            if (!string.IsNullOrEmpty(userName))
+                            {
+                                var nameParts = userName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                                if (nameParts.Length >= 2)
+                                {
+                                    // First name initial + Last name initial
+                                    userInitials = nameParts[0].Substring(0, 1).ToUpper() + 
+                                                nameParts[nameParts.Length - 1].Substring(0, 1).ToUpper();
+                                }
+                                else if (nameParts.Length == 1)
+                                {
+                                    // Only first name available
+                                    userInitials = nameParts[0].Substring(0, 1).ToUpper();
+                                }
+                            }
+                        }
+                        @userInitials
+                    </a>
+                </div>
+            }
+            else
+            {
+                <a href="/Account/Login" class="login-btn">Login</a>
+            }
             <a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i></a>
         </div>
     </div>
@@ -93,7 +125,7 @@
                         </div>
 
                         <div class="product-info">
-                        @*     <div class="brand-badges">
+                            <div class="brand-badges">
                                 @if (product.ProductName.Contains("AMD") || product.BrandID == 1)
                                 {
                                     <span class="brand-badge amd">AMD</span>
@@ -107,7 +139,7 @@
                                     <span class="brand-badge nvidia">NVIDIA</span>
                                 }
                                 <span class="brand-badge secondary">New</span>
-                            </div> *@
+                            </div>
 
                             <h3 class="product-name">@product.ProductName</h3>
 

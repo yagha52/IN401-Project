@@ -1,8 +1,12 @@
-﻿namespace HardwareStore_Application.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace HardwareStore_Application.Models
 {
     public class Brand
     {
-        public int BrandID { get; set; }
-        public string BrandName { get; set; }
+        public int BrandId { get; set; }
+        
+        [Required]
+        public required string BrandName { get; set; }
     }
 }

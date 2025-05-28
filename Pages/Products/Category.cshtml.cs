@@ -16,7 +16,7 @@ namespace HardwareStore_Application.Pages.Products
             CategoryName = categoryName;
             SearchQuery = query;
 
-            string connectionString = "server=localhost;user=root;password=R3in3.123@na;database=hardwarestore;";
+            string connectionString = "server=localhost;user=root;password=;database=hardwarestore;";
             using (var connection = new MySqlConnection(connectionString))
             {
                 connection.Open();

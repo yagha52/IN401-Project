@@ -1,8 +1,12 @@
-﻿namespace HardwareStore_Application.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace HardwareStore_Application.Models
 {
     public class Category
     {
-        public int CategoryID { get; set; }
-        public string CategoryName { get; set; }
+        public int CategoryId { get; set; }
+        
+        [Required]
+        public required string CategoryName { get; set; }
     }
 }

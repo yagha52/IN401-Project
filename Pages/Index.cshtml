@@ -1,4 +1,5 @@
 ﻿@page
+@using System.Security.Claims
 @model IndexModel
 @{
     ViewData["Title"] = "IFIXIT - Premium Computer Hardware";
@@ -21,11 +22,39 @@
                 <a href="/" class="brand-link">IFIXIT</a>
             </div>
 
-
             <div class="nav-actions">
-                <a href="/account/profile" class="nav-link">
-                    <i class="fas fa-user"></i>
-                </a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="user-profile">
+                        <a href="/Account/Profile" class="avatar">
+                            @{
+                                var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown User";
+                                var userInitials = "?";
+                                
+                                if (!string.IsNullOrEmpty(userName))
+                                {
+                                    var nameParts = userName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                                    if (nameParts.Length >= 2)
+                                    {
+                                        // First name initial + Last name initial
+                                        userInitials = nameParts[0].Substring(0, 1).ToUpper() + 
+                                                    nameParts[nameParts.Length - 1].Substring(0, 1).ToUpper();
+                                    }
+                                    else if (nameParts.Length == 1)
+                                    {
+                                        // Only first name available
+                                        userInitials = nameParts[0].Substring(0, 1).ToUpper();
+                                    }
+                                }
+                            }
+                            @userInitials
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="login-btn">Login</a>
+                }
                 <a href="#" class="nav-link">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
@@ -41,7 +70,7 @@
                 Discover the latest in high-performance computing components. From
                 cutting-edge CPUs to powerful graphics cards.
             </p>
-            <a href="#category-section" class="cta-button">
+            <a href="#" class="cta-button">
                 Shop Now
                 <i class="fas fa-arrow-right"></i>
             </a>
@@ -77,7 +106,7 @@
         </div>
     </section>
     <!-- Shop by Category Section -->
-    <section class="category-section" id="category-section">
+    <section class="category-section">
         <div class="category-container">
             <div class="section-header">
                 <i class="fas fa-chart-line section-icon"></i>
@@ -157,8 +186,6 @@
             <p>&copy; @DateTime.Now.Year IFIXIT. All rights reserved.</p>
         </div>
     </footer>
-
-
     <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

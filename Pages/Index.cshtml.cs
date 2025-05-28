@@ -25,11 +25,9 @@ namespace HardwareStore_Application.Pages
                 {
                     using var connection = new MySqlConnection(ConnectionString);
                     await connection.OpenAsync();
-                 
                 }
                 catch (Exception ex)
                 {
-                
                     Console.WriteLine($"Database connection failed: {ex.Message}");
                 }
             }

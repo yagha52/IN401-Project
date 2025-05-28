@@ -7,21 +7,40 @@ namespace HardwareStore_Application.Pages.Account
 {
     public class LogoutModel : PageModel
     {
+        private readonly ILogger<LogoutModel> _logger;
+
+        public LogoutModel(ILogger<LogoutModel> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
-            // Sign out the user
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+                
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                _logger.LogInformation("User {Email} logged out at {Time}", 
+                    userEmail ?? "Unknown", DateTime.UtcNow);
+            }
             
-            // Redirect to home page or login page
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Index", new { message = "You have been successfully logged out." });
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Handle POST logout (e.g., from a form submission)
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+                
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                _logger.LogInformation("User {Email} logged out at {Time}", 
+                    userEmail ?? "Unknown", DateTime.UtcNow);
+            }
             
-            // Redirect to home page or login page
             return RedirectToPage("/Index");
         }
     }
