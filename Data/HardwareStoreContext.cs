@@ -74,7 +74,7 @@ public class HardwareStoreDbContext : DbContext
         // Configure Product entity
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.ToTable("product"); // Also fix this if your table is singular
+            entity.ToTable("product");
             entity.HasKey(e => e.ProductID);
             entity.Property(e => e.ProductName).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");

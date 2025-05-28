@@ -24,6 +24,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // Add Authorization
 builder.Services.AddAuthorization();
 
+builder.Services.AddDistributedMemoryCache(); // Required for session state
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.Cookie.HttpOnly = true; // Security setting
+    options.Cookie.IsEssential = true; // GDPR compliance
+    options.Cookie.Name = "IFIXITSession";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,6 +50,8 @@ app.UseRouting();
 // Add Authentication and Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapRazorPages();
 

@@ -1,0 +1,129 @@
+@page
+@using System.Security.Claims
+@Html.AntiForgeryToken()
+@model CartModel
+@{
+    ViewData["Title"] = "Shopping Cart - IFIXIT";
+}
+
+@section Styles {
+    <link href="~/css/cart.css" rel="stylesheet" asp-append-version="true" />
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Cart Container -->
+    <div class="cart-container">
+        <div class="cart-header">
+            <div class="cart-header-left">
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Continue Shopping
+                </a>
+                <h1 class="cart-title">Shopping Cart</h1>
+            </div>
+        </div>
+
+        @if (Model.CartItems == null || !Model.CartItems.Any())
+        {
+            <!-- Empty Cart State -->
+            <div class="empty-cart">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h2>Your cart is empty</h2>
+                <p>Add some products to get started!</p>
+                <a href="/" class="start-shopping-btn">Start Shopping</a>
+            </div>
+        }
+        else
+        {
+            <!-- Clear Cart Button Above Items -->
+            <div class="clear-cart-section">
+                <button class="clear-cart-btn" onclick="clearCart()">
+                    <i class="fas fa-trash"></i>
+                    Clear Cart
+                </button>
+            </div>
+
+            <!-- Cart with Items -->
+            <div class="cart-content">
+                <div class="cart-items">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="cart-item" data-item-id="@item.Id">
+                            <div class="item-image">
+                                <i class="@item.IconClass"></i>
+                            </div>
+                            <div class="item-details">
+                                <h3>@item.Name</h3>
+                                <p>@item.Description</p>
+                                <div class="item-price">
+                                    $@item.Price.ToString("N2")
+                                    @if (item.Price < 599.99m)
+                                    {
+                                        <span class="original-price">$@(item.Price * 1.2m).ToString("N2")</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="quantity-controls">
+                                <input type="number" class="quantity-input" value="@item.Quantity" min="1" 
+                                       onchange="updateQuantity(@item.Id, this.value)"
+                                       onkeypress="if(event.key==='Enter') updateQuantity(@item.Id, this.value)">
+                            </div>
+                            <div class="total-price">$@item.TotalPrice.ToString("N2")</div>
+                            <button class="remove-btn" onclick="removeItem(@item.Id)" title="Remove item">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                <div class="cart-summary">
+                    <h3 class="summary-title">Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal (@Model.CartItems.Count items):</span>
+                        <span>$@Model.Subtotal.ToString("N2")</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>@(Model.Subtotal >= 100 ? "Free" : "$9.99")</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax:</span>
+                        <span>$@Model.Tax.ToString("N2")</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>$@Model.Total.ToString("N2")</span>
+                    </div>
+                    
+                    <button class="checkout-btn" onclick="proceedToCheckout()">
+                        Proceed to Checkout
+                    </button>
+                    
+                    <ul class="cart-features">
+                        <li>Free shipping on orders over $100</li>
+                        <li>30-day return policy</li>
+                        <li>Secure checkout</li>
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @section Scripts {
+        <script src="~/js/cart.js" asp-append-version="true"></script>
+    }
+</body>
+</html>
