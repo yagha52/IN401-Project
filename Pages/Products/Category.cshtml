@@ -1,0 +1,174 @@
+﻿@page "/Products/Category/{categoryName}"
+@using System.Security.Claims
+@model HardwareStore_Application.Pages.Products.CategoryModel
+@{
+    ViewData["Title"] = $"Products in {Model.CategoryName}";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+<!-- Navigation Header -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <a href="/" class="brand-link">IFIXIT</a>
+        </div>
+
+        <div class="nav-search">
+            <form method="get" class="search-form">
+                <input type="hidden" name="categoryName" value="@Model.CategoryName" />
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" name="query" class="search-input" placeholder="Search for CPUs, GPUs, RAM..." value="@Model.SearchQuery" />
+                </div>
+            </form>
+        </div>
+
+        <div class="nav-actions">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="user-profile">
+                    <a href="/Account/Profile" class="avatar">
+                        @{
+                            var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown User";
+                            var userInitials = "?";
+                            
+                            if (!string.IsNullOrEmpty(userName))
+                            {
+                                var nameParts = userName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                                if (nameParts.Length >= 2)
+                                {
+                                    // First name initial + Last name initial
+                                    userInitials = nameParts[0].Substring(0, 1).ToUpper() + 
+                                                nameParts[nameParts.Length - 1].Substring(0, 1).ToUpper();
+                                }
+                                else if (nameParts.Length == 1)
+                                {
+                                    // Only first name available
+                                    userInitials = nameParts[0].Substring(0, 1).ToUpper();
+                                }
+                            }
+                        }
+                        @userInitials
+                    </a>
+                </div>
+            }
+            else
+            {
+                <a href="/Account/Login" class="login-btn">Login</a>
+            }
+            <a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i></a>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🌟 Products</h2>
+        <span style="background: #4b5563; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">
+            @Model.Products.Count items
+        </span>
+
+        <h3>Filters</h3>
+        <div class="filter-section">
+            <h4 style="color: #ffffff;">Categories</h4>
+            <ul class="filter-list">
+                <li class="filter-item" data-category="cpu"><span class="filter-icon">🔧</span>Processors</li>
+                <li class="filter-item" data-category="vga"><span class="filter-icon">🎮</span>Graphics Cards</li>
+                <li class="filter-item" data-category="ram"><span class="filter-icon">💾</span>Memory</li>
+                <li class="filter-item" data-category="ssd"><span class="filter-icon">💽</span>Storage</li>
+                <li class="filter-item" data-category="Motherboards"><span class="filter-icon">⚡</span>Motherboards</li>
+                <li class="filter-item" data-category="Power Supplies"><span class="filter-icon">🔌</span>Power Supplies</li>
+                <li class="filter-item" data-category="Cases"><span class="filter-icon">📦</span>Cases</li>
+                <li class="filter-item" data-category="Cooling"><span class="filter-icon">❄</span>Cooling</li>
+            </ul>
+        </div>
+
+        <div class="filter-section">
+            <h4 style="color: #ffffff;">Brands</h4>
+            <ul class="filter-list">
+                <li class="filter-item" data-brand="AMD">AMD</li>
+                <li class="filter-item" data-brand="Intel">Intel</li>
+                <li class="filter-item" data-brand="NVIDIA">NVIDIA</li>
+                <li class="filter-item" data-brand="ASUS">ASUS</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="product-content">
+        <a href="#" class="back-link"><span class="back-arrow">←</span> Back to Store</a>
+
+        <div class="product-header">
+            <h1 class="product-title">@Model.CategoryName</h1>
+        </div>
+
+        @if (!Model.Products.Any())
+        {
+            <div class="no-products">
+                <p>No products found.</p>
+            </div>
+        }
+        else
+        {
+            <div class="product-grid">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="product-card" data-product-id="@product.ProductID">
+                        @if (product.OriginalPrice > product.Price)
+                        {
+                            <div class="sale-badge">Sale</div>
+                        }
+                        <div class="product-image">
+                            <img src="@product.image_url" alt="@product.ProductName" />
+                        </div>
+
+                        <div class="product-info">
+                            <div class="brand-badges">
+                                @if (product.ProductName.Contains("AMD") || product.BrandID == 1)
+                                {
+                                    <span class="brand-badge amd">AMD</span>
+                                }
+                                else if (product.ProductName.Contains("Intel") || product.BrandID == 2)
+                                {
+                                    <span class="brand-badge intel">Intel</span>
+                                }
+                                else if (product.ProductName.Contains("NVIDIA") || product.BrandID == 3)
+                                {
+                                    <span class="brand-badge nvidia">NVIDIA</span>
+                                }
+                                <span class="brand-badge secondary">New</span>
+                            </div>
+
+                            <h3 class="product-name">@product.ProductName</h3>
+
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+                                </div>
+                                <span class="rating-count">(247)</span>
+                            </div>
+
+                            <div class="product-pricing">
+                                @if (product.OriginalPrice > 0 && product.OriginalPrice > product.Price)
+                                {
+                                    <span class="current-price" style="color: #e53e3e;">$@product.Price.ToString("F2")</span>
+                                    <span class="original-price" style="text-decoration: line-through; color: gray;">$@product.OriginalPrice.ToString("F2")</span>
+                                }
+                                else
+                                {
+                                    <span class="current-price">$@product.Price.ToString("F2")</span>
+                                }
+                            </div>
+
+                            <button class="add-to-cart"><span class="cart-icon">🛒</span> Add to Cart</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<script src="~/js/products.js"></script>

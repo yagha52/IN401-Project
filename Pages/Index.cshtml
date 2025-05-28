@@ -1,0 +1,191 @@
+﻿@page
+@using System.Security.Claims
+@model IndexModel
+@{
+    ViewData["Title"] = "IFIXIT - Premium Computer Hardware";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="brand-link">IFIXIT</a>
+            </div>
+
+            <div class="nav-actions">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="user-profile">
+                        <a href="/Account/Profile" class="avatar">
+                            @{
+                                var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown User";
+                                var userInitials = "?";
+                                
+                                if (!string.IsNullOrEmpty(userName))
+                                {
+                                    var nameParts = userName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                                    if (nameParts.Length >= 2)
+                                    {
+                                        // First name initial + Last name initial
+                                        userInitials = nameParts[0].Substring(0, 1).ToUpper() + 
+                                                    nameParts[nameParts.Length - 1].Substring(0, 1).ToUpper();
+                                    }
+                                    else if (nameParts.Length == 1)
+                                    {
+                                        // Only first name available
+                                        userInitials = nameParts[0].Substring(0, 1).ToUpper();
+                                    }
+                                }
+                            }
+                            @userInitials
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="login-btn">Login</a>
+                }
+                <a href="#" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Premium Computer Hardware</h1>
+            <p class="hero-subtitle">
+                Discover the latest in high-performance computing components. From
+                cutting-edge CPUs to powerful graphics cards.
+            </p>
+            <a href="#" class="cta-button">
+                Shop Now
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Warranty Protection</h3>
+                <p class="feature-description">Full manufacturer warranty on all products</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <h3 class="feature-title">Fast Shipping</h3>
+                <p class="feature-description">Free shipping on orders over $100</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="feature-title">Expert Support</h3>
+                <p class="feature-description">Get help from our hardware specialists</p>
+            </div>
+        </div>
+    </section>
+    <!-- Shop by Category Section -->
+    <section class="category-section">
+        <div class="category-container">
+            <div class="section-header">
+                <i class="fas fa-chart-line section-icon"></i>
+                <h2 class="section-title">Shop by Category</h2>
+            </div>
+
+            <div class="category-grid">
+                <a href="/Products/Category/cpu" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3 class="category-name">Processors</h3>
+                </a>
+
+                <a href="/Products/Category/vga" class="category-card">
+                    <div class="category-icon graphics-card">
+                        <i class="fas fa-tv"></i>
+                    </div>
+                    <h3 class="category-name">Graphics Cards</h3>
+                </a>
+
+                <a href="/Products/Category/ram" class="category-card">
+                    <div class="category-icon memory">
+                        <i class="fas fa-memory"></i>
+                    </div>
+                    <h3 class="category-name">Memory</h3>
+                </a>
+
+                <a href="/Products/Category/ssd" class="category-card">
+                    <div class="category-icon storage">
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                    <h3 class="category-name">Storage</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-about">
+                <h3>IFIXIT</h3>
+                <p>Your one-stop shop for high-performance computer hardware. Trusted by tech enthusiasts and professionals alike.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories">Shop</a></li>
+                    <li><a href="/cart">Cart</a></li>
+                    <li><a href="/account/profile">Profile</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h4>Contact</h4>
+                <p>Email: support@ifixitstore.com</p>
+                <p>Phone: +1 (800) 123-4567</p>
+                <p>Address: 123 Tech Blvd, Silicon Valley, CA</p>
+            </div>
+
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; @DateTime.Now.Year IFIXIT. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

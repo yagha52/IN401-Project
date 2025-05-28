@@ -1,0 +1,310 @@
+@page
+@model HardwareStore_Application.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="~/css/profile.css" />
+
+
+<div class="profile-container">
+    <div class="profile-wrapper">
+        <a href="/" class="back-nav">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Store</span>
+        </a>
+        
+        <div class="profile-main">
+            <!-- User Sidebar -->
+            <div class="user-sidebar">
+                <div class="user-avatar">
+                    @{
+                        var fullName = Model.UserProfile?.FullName ?? "";
+                        var initial = fullName.Length > 0 ? fullName[0].ToString().ToUpper() : "?";
+                    }
+                    @initial
+                </div>
+                <div class="user-info">
+                    <h2 class="user-name">@Model.UserProfile.FullName</h2>
+                    <p class="user-email">@Model.UserProfile.Email</p>
+                    <form method="post" asp-page-handler="Logout" style="margin-top: 1rem;">
+                        <button type="submit" class="logout-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16,17 21,12 16,7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Tab Navigation -->
+                <nav class="tab-navigation">
+                    <a href="?tab=profile" class="tab-button @(Model.ActiveTab == "profile" ? "active" : "")">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                    <a href="?tab=address" class="tab-button @(Model.ActiveTab == "address" ? "active" : "")">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Address
+                    </a>
+                    <a href="?tab=orders" class="tab-button @(Model.ActiveTab == "orders" ? "active" : "")">
+                        <i class="fas fa-shopping-bag"></i>
+                        Orders
+                    </a>
+                </nav>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Success/Error Messages -->
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            @TempData["Success"]
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            Please correct the errors below.
+                        </div>
+                    }
+
+                    <!-- Profile Tab -->
+                    <div class="tab-pane @(Model.ActiveTab == "profile" ? "active" : "")" id="profile-tab">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-user"></i>
+                                Personal Information
+                            </h3>
+                            <button class="edit-button" onclick="toggleEditMode()">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </button>
+                        </div>
+                        
+                        <!-- Display Mode -->
+                        <div id="profile-display" class="profile-display">
+                            <div class="profile-field">
+                                <label class="field-label">Full Name</label>
+                                <div class="field-value">@Model.UserProfile.FullName</div>
+                            </div>
+                            
+                            <div class="profile-field">
+                                <label class="field-label">Email</label>
+                                <div class="field-value">@Model.UserProfile.Email</div>
+                            </div>
+                            
+                            <div class="profile-field full-width">
+                                <label class="field-label">Phone Number</label>
+                                <div class="field-value">@(Model.UserProfile.Phone ?? "Not provided")</div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Mode (Hidden by default) -->
+                        <form method="post" asp-page-handler="UpdateProfile" id="profile-form" style="display: none;">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label asp-for="UserProfile.FullName" class="form-label">Full Name</label>
+                                    <input asp-for="UserProfile.FullName" class="form-input" placeholder="Enter your full name" />
+                                    <span asp-validation-for="UserProfile.FullName" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label asp-for="UserProfile.Email" class="form-label">Email</label>
+                                    <input asp-for="UserProfile.Email" class="form-input" placeholder="Enter your email" />
+                                    <span asp-validation-for="UserProfile.Email" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <label asp-for="UserProfile.Phone" class="form-label">Phone Number</label>
+                                    <input asp-for="UserProfile.Phone" class="form-input" placeholder="Enter your phone number" />
+                                    <span asp-validation-for="UserProfile.Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Save Changes
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+                                    <i class="fas fa-times"></i>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Address Tab -->
+                    <div class="tab-pane @(Model.ActiveTab == "address" ? "active" : "")" id="address-tab">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-home"></i>
+                                Shipping Address
+                            </h3>
+                            <button class="edit-button" onclick="toggleAddressEditMode()">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </button>
+                        </div>
+                        
+                        <!-- Display Mode -->
+                        <div id="address-display" class="profile-display">
+                            <div class="profile-field full-width">
+                                <label class="field-label">Street Address</label>
+                                <div class="field-value">@(Model.Address?.StreetAddress ?? "Not provided")</div>
+                            </div>
+                            
+                            <div class="profile-field">
+                                <label class="field-label">City</label>
+                                <div class="field-value">@(Model.Address?.City ?? "Not provided")</div>
+                            </div>
+                            
+                            <div class="profile-field">
+                                <label class="field-label">State</label>
+                                <div class="field-value">@(Model.Address?.State ?? "Not provided")</div>
+                            </div>
+                            
+                            <div class="profile-field">
+                                <label class="field-label">ZIP Code</label>
+                                <div class="field-value">@(Model.Address?.ZipCode ?? "Not provided")</div>
+                            </div>
+                            
+                            <div class="profile-field">
+                                <label class="field-label">Country</label>
+                                <div class="field-value">@(Model.Address?.Country ?? "Not provided")</div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Mode -->
+                        <form method="post" asp-page-handler="UpdateAddress" id="address-form" style="display: none;">
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label asp-for="Address.StreetAddress" class="form-label">Street Address</label>
+                                    <input asp-for="Address.StreetAddress" class="form-input" placeholder="Enter your street address" />
+                                    <span asp-validation-for="Address.StreetAddress" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label asp-for="Address.City" class="form-label">City</label>
+                                    <input asp-for="Address.City" class="form-input" placeholder="Enter your city" />
+                                    <span asp-validation-for="Address.City" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label asp-for="Address.State" class="form-label">State</label>
+                                    <input asp-for="Address.State" class="form-input" placeholder="Enter your state" />
+                                    <span asp-validation-for="Address.State" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label asp-for="Address.ZipCode" class="form-label">ZIP Code</label>
+                                    <input asp-for="Address.ZipCode" class="form-input" placeholder="Enter your ZIP code" />
+                                    <span asp-validation-for="Address.ZipCode" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label asp-for="Address.Country" class="form-label">Country</label>
+                                    <input asp-for="Address.Country" class="form-input" placeholder="Enter your country" />
+                                    <span asp-validation-for="Address.Country" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Update Address
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelAddressEdit()">
+                                    <i class="fas fa-times"></i>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Orders Tab -->
+                    <div class="tab-pane @(Model.ActiveTab == "orders" ? "active" : "")" id="orders-tab">
+                        <h3 class="section-title">
+                            <i class="fas fa-history"></i>
+                            Order History
+                        </h3>
+                        
+                        @if (Model.Orders.Any())
+                        {
+                            @foreach (var order in Model.Orders)
+                            {
+                                <div class="order-card">
+                                    <div class="order-header">
+                                        <div>
+                                            <div class="order-id">
+                                                <i class="fas fa-receipt"></i>
+                                                @order.OrderId
+                                                <span class="order-status @(order.Status.ToLower() == "delivered" ? "status-delivered" : "status-shipped")">
+                                                    @order.Status
+                                                </span>
+                                            </div>
+                                            <div class="order-date">
+                                                <i class="fas fa-calendar"></i>
+                                                @order.OrderDate.ToString("MM/dd/yyyy")
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            @order.TotalAmount.ToString("C")
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="order-items">
+                                        @foreach (var item in order.Items)
+                                        {
+                                            <div class="order-item">
+                                                <span class="item-name">@item.Name</span>
+                                                <span class="item-quantity">× @item.Quantity</span>
+                                                <span class="item-price">@item.Price.ToString("C")</span>
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    <div class="order-actions">
+                                        <button class="btn btn-secondary">
+                                            <i class="fas fa-eye"></i>
+                                            View Details
+                                        </button>
+                                        @if (order.Status.ToLower() == "delivered")
+                                        {
+                                            <button class="btn btn-primary">
+                                                <i class="fas fa-redo"></i>
+                                                Reorder
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <p>No orders found</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<script src="~/js/profile.js"></script>
