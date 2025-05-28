@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\HardwareStore_Application.props" />
-</Project>
