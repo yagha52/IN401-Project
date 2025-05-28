@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using HardwareStore.Models;
-using HardwareStore_Application.Models;
 
 public class HardwareStoreDbContext : DbContext
 {

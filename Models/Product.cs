@@ -1,4 +1,4 @@
-﻿namespace HardwareStore_Application.Models
+﻿namespace HardwareStore.Models
 {
     public class Product
     {
