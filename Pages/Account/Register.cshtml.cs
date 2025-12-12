@@ -8,17 +8,20 @@ using MySql.Data.MySqlClient;
 using System.Security.Cryptography;
 using System.Text;
 using HardwareStore.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace HardwareStore_Application.Pages.Account
 {
     public class RegisterModel : PageModel
     {
         private readonly ILogger<RegisterModel> _logger;
-        private readonly string _connectionString = "server=localhost;port=3306;database=hardwarestore;user=root;password=;";
+        private readonly string _connectionString;
 
-        public RegisterModel(ILogger<RegisterModel> logger)
+        public RegisterModel(ILogger<RegisterModel> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _connectionString = configuration.GetConnectionString("DefaultConnection") 
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
         [BindProperty]

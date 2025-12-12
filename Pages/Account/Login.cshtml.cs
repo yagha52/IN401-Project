@@ -9,17 +9,20 @@ using System.Security.Cryptography;
 using System.Text;
 using HardwareStore.Models;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace HardwareStore_Application.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly ILogger<LoginModel> _logger;
-        private readonly string _connectionString = "server=localhost;port=3306;database=hardwarestore;user=root;password=;";
+        private readonly string _connectionString;
 
-        public LoginModel(ILogger<LoginModel> logger)
+        public LoginModel(ILogger<LoginModel> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _connectionString = configuration.GetConnectionString("DefaultConnection") 
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
         [BindProperty]
