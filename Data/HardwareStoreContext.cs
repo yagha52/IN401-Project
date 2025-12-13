@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HardwareStore.Models;
+using HardwareStore_Application.Models;
 
 public class HardwareStoreDbContext : DbContext
 {
@@ -10,6 +11,14 @@ public class HardwareStoreDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Brand> Brands { get; set; }
+    public DbSet<Inventory> Inventories { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<CPUDetails> CPUDetails { get; set; }
+    public DbSet<RAMDetails> RAMDetails { get; set; }
+    public DbSet<SSDDetails> SSDDetails { get; set; }
+    public DbSet<VGADetails> VGADetails { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,5 +88,15 @@ public class HardwareStoreDbContext : DbContext
             entity.Property(e => e.ProductName).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
         });
+
+        modelBuilder.Entity<Category>().ToTable("category");
+        modelBuilder.Entity<Brand>().ToTable("brand");
+        modelBuilder.Entity<Inventory>().ToTable("inventory").HasKey(e => e.ProductID);
+        modelBuilder.Entity<CartItem>().ToTable("cartitem");
+        
+        modelBuilder.Entity<CPUDetails>().ToTable("cpudetails").HasKey(e => e.ProductID);
+        modelBuilder.Entity<RAMDetails>().ToTable("ramdetails").HasKey(e => e.ProductID);
+        modelBuilder.Entity<SSDDetails>().ToTable("ssddetails").HasKey(e => e.ProductID);
+        modelBuilder.Entity<VGADetails>().ToTable("vgadetails").HasKey(e => e.ProductID);
     }
 }
