@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
 namespace HardwareStore_Application.Pages.Products
 {
@@ -11,13 +12,20 @@ namespace HardwareStore_Application.Pages.Products
         public string CategoryName { get; set; }
         public string SearchQuery { get; set; }
 
+        private readonly string _connectionString;
+
+        public CategoryModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection") 
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        }
+
         public void OnGet(string categoryName, string brand, string query)
         {
             CategoryName = categoryName;
             SearchQuery = query;
 
-            string connectionString = "server=localhost;user=root;password=;database=hardwarestore;";
-            using (var connection = new MySqlConnection(connectionString))
+            using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
 
